@@ -1,39 +1,35 @@
 class Pather
-	attr_accessor :input, :output
 
-	@arr = []
-	@hash_count = 0
-	@position = []
-
-	File.open(:input, 'r').each_line do |line|
-		@arr = line.split(' ')
+	def initialize(lines)
+		@arr = []
+		@position = []
+		lines.each_line do |line|
+			@arr = line.split(' ')
+		end
+		puts "Original Contents"
+		puts @arr
 	end
 
-	puts "Original Contents"
-	puts @arr
-
-	puts "\n\n"
+	def main_loop
+		find_positions(@arr)
+		draw_path
+		puts "\n New Array"
+		puts @arr
+		return @arr.join("\n")
+	end
 
 	### Finds indexes of two hashes
-	def find_positions
-		@arr.each do |line|
+	def find_positions(arr)
+		arr.each do |line|
 			line.split('').each do |char|
 				if char == "#"
-					@hash_count += 1
 					@position.push(@arr.index(line))
 					@position.push(line.index(char))
 				end
 			end
 		end
+		@h1 = Hash[*@position.flatten]
 	end
-
-	@h1 = Hash[*@position.flatten]
-
-	# if @hash_count > 1
-	# 	puts "there are #{@hash_count} '#' symbols present, drawing path"
-	# else
-	# 	puts "too few '#' symbols present, ending"
-	# end
 
 	def draw_path
 		i=0
@@ -68,23 +64,15 @@ class Pather
 			end
 		end
 	end
-
-	draw_path
-	puts @arr
-
-	# def make_new_file
-	# 	File.open(output, 'w') do |f2|  
-	# 	  f2.puts @arr
-	# 	end
-	# end
-
 end
 
 if __FILE__ == $0
   if ARGV.length != 2
-    puts "Usage: ruby pather.rb <input file> <output file>"
+    puts "Two arguments must be supplied"
   else
-    pather = Pather.new(File.readlines(ARGV[0]))
-    File.open(ARGV[1], 'w') {|f| f.write(pather.draw) }
+    pather = Pather.new(File.open(ARGV[0], 'r'))
+    File.open(ARGV[1], 'w') do |f|  
+    	f.write(pather.main_loop)
+    end
   end
 end
